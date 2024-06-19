@@ -30,8 +30,8 @@
       dest: /app
       remote_src: yes
 
-  - name: Install dependenacies
-    ansible.buitln. command:
+  - name: Install dependencies
+    ansible.builtin.command:
     args:
       chdir: /app
 
@@ -51,4 +51,4 @@
     ansible.builtin.package:
       name: mongodb-org-shell
       state: present
-      
+
