@@ -1,5 +1,5 @@
-- name: user
-  hosts: user
+- name: catalogue
+  hosts: catalogue
   become: yes
   tasks:
   - name:  disable old nodejs and enable nodejs:18
@@ -24,14 +24,14 @@
       path: /app
       state: directory
     
-  - name: download user application
+  - name: download catalogue application
     ansible.builtin.get_url:
-      url: https://roboshop-builds.s3.amazonaws.com/user.zip
+      url: https://roboshop-builds.s3.amazonaws.com/catalogue.zip
       dest: /tmp
 
-  - name: extract user application
+  - name: extract catalogue application
     ansible.builtin.unarchive:
-      src: /tmp/user.zip
+      src: /tmp/catalogue.zip
       dest: /app
       remote_src: yes
 
@@ -40,10 +40,14 @@
     args:
       chdir: /app
 
-  - name: Copy user service
+  - name: Copy catalogue service
     ansible.builtin.copy:
-      src: user.service
-      dest: /etc/systemd/system/user.service
+      src: catalogue.service
+      dest: /etc/systemd/system/catalogue.service
+  
+  - name: daemon reload and start
+    ansible.builtin.systemd_service:
+      daemon_reload: true
 
 # lets load the data and start
 
@@ -57,21 +61,21 @@
       name: mongodb-org-shell
       state: present
 
-  - name: get the users count
-    ansible.builtin.command: mongo --host mongodb.daws66s.online --quiet --eval 'db=db.getSiblingDB("user"); db.products.count()'
+  - name: get the catalogues count
+    ansible.builtin.command: mongo --host mongodb.daws66s.online --quiet --eval 'db=db.getSiblingDB("catalogue"); db.products.count()'
     register: product_count
   
   # - name: print the count
   #   ansible.builtin.debug:
   #     msg: "Product count: {{product_count}}"
     
-  - name: load user data
-    ansible.builtin.command: mongo --host mongodb.daws66s.online < /app/schema/user.js
+  - name: load catalogue data
+    ansible.builtin.command: mongo --host mongodb.daws66s.online < /app/schema/catalogue.js
     when: product_count.stdout== "0"  # keep in double quotes
-
+    
   
-  - name: start and enable user
+  - name: start and enable catalogue
     ansible.builtin.service:
-      name: user
+      name: catalogue
       state: restarted
       enabled: yes
