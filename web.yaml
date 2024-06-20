@@ -5,7 +5,7 @@
   - name: install nginx
     ansible.builtin.package:
       name: nginx
-      state:present
+      state: present
 
   - name: remove html directory
     ansible.builtin.file:
@@ -29,7 +29,7 @@
       remote_src: yes
 
   - name: copy roboshop configuration
-    ansible.builtn.copy:
+    ansible.builtin.copy:
       src: roboshop.conf
       dest: /etc/nginx/default.d/roboshop.conf
   
