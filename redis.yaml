@@ -1,5 +1,6 @@
 - name: install redis component
   hosts: redis
+  become: yes
   tasks:
   - name: install remi release
     ansible.builtin.package:
